@@ -1,0 +1,28 @@
+{
+  "name": "8bit",
+  "version": "1.0.0",
+  "description": "Binary visual calculator",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "npx nodemon"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/briannalee/8bit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/briannalee/8bit/issues"
+  },
+  "homepage": "https://github.com/briannalee/8bit#readme",
+  "devDependencies": {
+    "@types/node": "^18.11.19",
+    "nodemon": "^2.0.20",
+    "rimraf": "^4.1.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
+  }
+}
