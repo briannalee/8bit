@@ -1,0 +1,5 @@
+{
+    "entryPointStrategy": "expand",
+    "out": "docs",
+    "includes": "src"
+  }
