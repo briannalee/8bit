@@ -1,0 +1,19 @@
+#container {
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+#viewport {
+  height: 100%;
+  width: 100%;
+}
+#controls{
+  top: 0;
+  right: 0;
+  padding-right: 1em;
+  padding-top: 1em;
+  position: absolute;
+}
+body {
+    color: white;
+}
