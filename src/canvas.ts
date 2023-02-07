@@ -29,9 +29,18 @@ export class Canvas {
         document.body.style.backgroundColor = "black";
 
         // Create canvas and append to page, with error handling
-        if (!(this.canvas = document.getElementById("viewport") as HTMLCanvasElement)) {
+        if (!(this.canvas = document.createElement("canvas") as HTMLCanvasElement)) {
             throw new Error("Unable to create canvas");
         }
+        // Set ID of the canvas, for CSS styling
+        this.canvas.id = "viewport";
+        
+        // Append the canvas to the container div, with error handling
+        let containerDiv: HTMLElement;
+        if (!(containerDiv = document.getElementById("container")!)) {
+            throw new Error("Unable to append canvas to container");
+        }
+        containerDiv.append(this.canvas)!
         
         // Get context, with error handling
         if (!(this.context = this.canvas.getContext("2d")!)) {
@@ -43,11 +52,6 @@ export class Canvas {
         this.canvas.addEventListener("mousedown", function(e)
         {
             classAccessor.mouseClickEvent(e, classAccessor);
-        });
-
-        // TODO: Handle window resize
-        window.addEventListener("resize", function(e) {
-            
         });
 
         document.getElementById("compute")?.addEventListener("click",function(e) {
