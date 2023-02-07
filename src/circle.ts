@@ -34,11 +34,18 @@ export class Circle {
         this.draw(this.context);
     }
 
+    /**
+     * Switches the bit value and redraw
+     */
     switchBit() {
         this.set = !this.set;
         this.draw(this.context);
     }
 
+    /**
+     * Sets the bit value for the circle to the provided bit and redraw
+     * @param bit - Setting to apply to the bit
+     */
     setBit(bit: boolean) {
         this.set = bit;
         this.draw(this.context);
