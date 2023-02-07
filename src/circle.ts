@@ -1,15 +1,8 @@
 export class Circle {
     /**
      * Class that holds info about a circle drawn on an HTML canvas, representing a visual bit of data.
-     * 
-     * @param x - Centerpoint X coordinate of circle
-     * @param y - Centerpoint Y coordinate of circle
-     * @param radius - Radius of circle to draw
-     * @param context - Canvas context to draw on
-     * @param set - Optional parameter, default false
-     * 
-     * @returns - void
      */
+
     set:Boolean;
     x:number;
     y:number;
@@ -18,6 +11,7 @@ export class Circle {
     top: number;
     right: number;
     bottom: number;
+    context: CanvasRenderingContext2D;
 
     /**
      * 
@@ -36,7 +30,18 @@ export class Circle {
         this.top = y-radius;
         this.right = x+radius;
         this.bottom = y+radius;
-        this.draw(context);
+        this.context = context;
+        this.draw(this.context);
+    }
+
+    switchBit() {
+        this.set = !this.set;
+        this.draw(this.context);
+    }
+
+    setBit(bit: boolean) {
+        this.set = bit;
+        this.draw(this.context);
     }
 
     /**
@@ -44,10 +49,10 @@ export class Circle {
      * @param context - The canvas context to draw on
      */
     draw(context: CanvasRenderingContext2D): void {
-        context.clearRect(this.left, this.top, this.radius*2, this.radius*2);
+        context.clearRect(this.left-2, this.top-2, this.radius*2+4, this.radius*2+4);
         context.beginPath();
         context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-        context.fillStyle = this.set ? "white" : "grey";
+        context.fillStyle = this.set ? "white" : "#0f0f0f";
         context.fill();
         context.closePath();
     }

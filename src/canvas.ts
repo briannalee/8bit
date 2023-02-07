@@ -1,4 +1,5 @@
 import { Environment } from "./environment";
+import { Compute } from "./math";
 
 /**
  * Interface to hold coordinates for a mouse click event
@@ -28,10 +29,9 @@ export class Canvas {
         document.body.style.backgroundColor = "black";
 
         // Create canvas and append to page, with error handling
-        if (!(this.canvas = document.createElement("CANVAS") as HTMLCanvasElement)) {
+        if (!(this.canvas = document.getElementById("viewport") as HTMLCanvasElement)) {
             throw new Error("Unable to create canvas");
         }
-        document.body.appendChild(this.canvas);
         
         // Get context, with error handling
         if (!(this.context = this.canvas.getContext("2d")!)) {
@@ -44,9 +44,20 @@ export class Canvas {
         {
             classAccessor.mouseClickEvent(e, classAccessor);
         });
+
+        // TODO: Handle window resize
+        window.addEventListener("resize", function(e) {
+            
+        });
+
+        document.getElementById("compute")?.addEventListener("click",function(e) {
+            Compute(classAccessor.environment);
+        });
         
         this.canvas.width = innerWidth;
         this.canvas.height = innerHeight;
+
+        this.drawLine();
     }
 
     /**
@@ -76,17 +87,34 @@ export class Canvas {
             const spacing = canvas.environment.spacing;
             const startY = canvas.environment.startY;
             const startX = canvas.environment.startX;
-                    const radius = canvas.environment.radius;
+            const radius = canvas.environment.radius;
             if ((mousePos.y > startY+row*spacing && mousePos.y < (canvas.environment.startY+row*spacing)+spacing)) {
                 for (let col = 0; col < canvas.environment.columns; col++) {
                     
                     if ((mousePos.x > startX-radius+col*spacing && mousePos.x < canvas.environment.startX+radius+col*spacing)) {
-                        canvas.environment.circles[row][col].set = !canvas.environment.circles[row][col].set;
-                        canvas.environment.circles[row][col].draw(canvas.context);
+                        canvas.environment.circles[row][col].switchBit();
                     }
                 }
             }
         }
+    }
+
+    /**
+     * Draws the divider line between the numbers and results display
+     */
+    drawLine() {
+        this.context.beginPath();
+        const yPos : number = this.environment.startY+this.environment.spacing/4+this.environment.rows*this.environment.spacing;
+        const xPos : number = this.environment.startX - this.environment.radius;
+        this.context.moveTo(xPos, yPos);
+        this.context.lineTo(xPos + this.environment.columns*this.environment.spacing,  yPos);
+        this.context.strokeStyle = "white";
+        this.context.stroke();
+        this.context.closePath();
+    }
+
+    drawButtons() {
+
     }
 }
 
