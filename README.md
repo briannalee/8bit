@@ -5,4 +5,4 @@ Binary visual calculator
 Use 8Bit at https://briannalee.github.io/8bit/
 
 ## Documentation
-Available at https://briannalee.github.io/8bit/docs/
+Docs available at https://briannalee.github.io/8bit/docs/
