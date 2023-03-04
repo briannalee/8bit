@@ -39,7 +39,7 @@ export class CanvasStage {
         
         // Append the canvas to the container div, with error handling
         let containerDiv: HTMLElement;
-        if (!(containerDiv = document.getElementById("container")!)) {
+        if (!(containerDiv = document.getElementById("main")!)) {
             throw new Error("Unable to append canvas to container");
         }
         containerDiv.append(this.canvas)!

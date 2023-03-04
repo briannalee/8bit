@@ -93,8 +93,9 @@ export class Environment {
         let padding: number = 5;
 
         //Determine the drawing area size
-        this.width = Math.min(window.innerWidth, document.documentElement.clientWidth) - (this.pagePadding*2);
-        this.height = Math.min(window.innerHeight, document.documentElement.clientHeight) - (this.pagePadding*2);
+        this.width = document.getElementById("main")!.offsetWidth-this.pagePadding*2;
+        this.height = document.getElementById("main")!.offsetHeight-this.pagePadding*2;
+        
 
         //Maximum columns we could have with the minWidth
         this.MaxBits =  Math.floor((this.width) / ((this.minWidth*2)+padding));
@@ -112,6 +113,8 @@ export class Environment {
                 )
             )
         );
+
+        console.log((((this.width) - padding*this.columns)/2) / this.columns);
         
         //The space between each circle
         this.spacing = this.radius * 2 + padding;
@@ -119,7 +122,7 @@ export class Environment {
         // Determine the starting position to draw the circles
         let totalWidth = this.columns * this.spacing - padding*2;
         let startX = (this.width - totalWidth) / 2 + this.radius;
-        let totalHeight = ((this.rows+2) * this.spacing) - padding*2;
+        let totalHeight = ((this.rows+2) * this.spacing);
         let startY = (this.height - totalHeight) / 2;
 
         this.startX = startX;
