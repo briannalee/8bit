@@ -114,8 +114,6 @@ export class Environment {
             )
         );
 
-        console.log((((this.width) - padding*this.columns)/2) / this.columns);
-        
         //The space between each circle
         this.spacing = this.radius * 2 + padding;
 
