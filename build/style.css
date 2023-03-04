@@ -16,4 +16,5 @@
 }
 body {
     color: white;
+    overflow: hidden;
 }

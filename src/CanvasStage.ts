@@ -1,5 +1,7 @@
-import { Environment } from "./environment";
-import { Compute } from "./math";
+import { start } from "repl";
+import { ChangeBitSize } from ".";
+import { Environment } from "./Environment";
+import { Compute } from "./MathHelper";
 
 /**
  * Interface to hold coordinates for a mouse click event
@@ -9,7 +11,7 @@ export interface mouseClick {
     y: number;
 }
 
-export class Canvas {
+export class CanvasStage {
     /**
      * Contains info about the canvas DOM object
      */
@@ -49,17 +51,27 @@ export class Canvas {
 
         //Add input event handling
         let classAccessor = this;
-        this.canvas.addEventListener("mousedown", function(e)
+        this.canvas.addEventListener("mouseup", function(e)
         {
-            classAccessor.mouseClickEvent(e, classAccessor);
+            classAccessor.mouseClickEvent(e);
         });
 
         document.getElementById("compute")?.addEventListener("click",function(e) {
             Compute(classAccessor.environment);
         });
-        
-        this.canvas.width = innerWidth;
-        this.canvas.height = innerHeight;
+
+        let bitsInput : HTMLInputElement = document.getElementById("bits")! as HTMLInputElement;
+        if (bitsInput) {
+            bitsInput.addEventListener("input",function(e) {
+                let value: number;
+                if (value = parseInt(bitsInput.value)) {
+                    ChangeBitSize(value);
+                }
+            });
+        }
+
+        this.canvas.width = environment.width;
+        this.canvas.height = environment.height;
 
         this.drawLine();
     }
@@ -70,10 +82,14 @@ export class Canvas {
      * @returns - Coordinates as mouseClick interface
      */
     getMousePosition(event: MouseEvent) : mouseClick {
-        let rect = this.canvas.getBoundingClientRect();
-        let x = event.clientX - rect.left;
-        let y = event.clientY - rect.top;
-        return {x:x, y:y}
+        let rect = this.canvas.getBoundingClientRect(), // abs. size of element
+        scaleX = this.canvas.width / rect.width,    // relationship bitmap vs. element for x
+        scaleY = this.canvas.height / rect.height;  // relationship bitmap vs. element for y
+
+        return {
+            x: (event.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+            y: (event.clientY - rect.top) * scaleY     // been adjusted to be relative to element
+        }
     }
 
     /**
@@ -82,23 +98,21 @@ export class Canvas {
      * @param e - Triggering event
      * @param canvas - Canvas class that is currently being used
      */
-    mouseClickEvent(e:MouseEvent, canvas:Canvas) {
-        let mousePos : mouseClick = canvas.getMousePosition(e);
-    
-        let row:number = mousePos.y
-    
-        for (let row = 0; row < canvas.environment.rows; row++) {
-            const spacing = canvas.environment.spacing;
-            const startY = canvas.environment.startY;
-            const startX = canvas.environment.startX;
-            const radius = canvas.environment.radius;
-            if ((mousePos.y > startY+row*spacing && mousePos.y < (canvas.environment.startY+row*spacing)+spacing)) {
-                for (let col = 0; col < canvas.environment.columns; col++) {
-                    
-                    if ((mousePos.x > startX-radius+col*spacing && mousePos.x < canvas.environment.startX+radius+col*spacing)) {
-                        canvas.environment.circles[row][col].switchBit();
-                    }
-                }
+    mouseClickEvent(e:MouseEvent) {
+        let mousePos : mouseClick = this.getMousePosition(e);
+        for (let row = 0; row < this.environment.rows; row++) {
+            const spacing = this.environment.spacing;
+            const startY = this.environment.startY;
+            const startX = this.environment.startX;
+            const radius = this.environment.radius;
+            
+            if ((mousePos.y > startY+row*spacing && mousePos.y < (startY+row*spacing)+spacing)) {
+                for (let col = 0; col < this.environment.columns; col++) {
+                    if ((mousePos.x > startX + (col*spacing-radius)) &&
+                        (mousePos.x < startX + (col*spacing+radius))) {
+                            this.environment.BinaryNumbers[row].setBit(col);
+                        }
+                        }
             }
         }
     }
@@ -121,6 +135,4 @@ export class Canvas {
 
     }
 }
-
-
 

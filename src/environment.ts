@@ -1,5 +1,6 @@
-import { Circle } from "./circle";
-import { Canvas } from "./canvas";
+import { VisualBit } from "./VisualBit";
+import { CanvasStage } from "./CanvasStage";
+import { BinaryNumber } from "./BinaryNumber";
 
 export class Environment {
     /**
@@ -9,12 +10,17 @@ export class Environment {
     /**
      * An array, first dimension is the row (number), second dimension is the column (bit)
      */
-    circles:Circle[][];
+    circles:VisualBit[][];
 
     /**
-     * An array containing the circles that are used for the results display
+     * Number class array, each Number holds a row (number)
      */
-    results:Circle[];
+    BinaryNumbers:BinaryNumber[];
+
+    /**
+     * A BinaryNumber to display the results
+     */
+    results:BinaryNumber;
 
     /**
      * Radius of the circle, computed based on window width
@@ -49,46 +55,87 @@ export class Environment {
     /**
      * The canvas to draw on
      */
-    canvas:Canvas;
+    canvas:CanvasStage;
+
+    /**
+     * The width of the canvas
+     */
+    width:number;
+
+    /**
+     * The height of the canvas
+     */
+    height:number;
+
+    /**
+     * The padding surrounding the draw area
+     */
+    pagePadding:number = 10;
+
+    /**
+     * Minimum radius of circle in pixels
+     */
+    minWidth:number = 10;
+
+    /**
+     * Maximum bits the page can fit
+     */
+    MaxBits:number;
 
     /**
      * Creates a canvas and draws circles on it to represent (row) binary numbers of (columns) bit length.
      * @param columns - Number of columns (bits)
      * @param rows - Number of rows (numbers)
      */
-    constructor();
-    constructor(columns?:number,rows?:number) {
-        this.columns = columns ?? 8;
-        this.rows = rows ?? 2;
-        let padding : number = 5;
+    constructor(columns:number,rows:number) {
+        this.columns = columns;
+        this.rows = rows;
+        let padding: number = 5;
 
-        // Compute the radius of the circles that can fit in the window
-        let desiredRadius:number = (innerWidth/2)/this.columns - padding*2;
-        this.radius = desiredRadius < 10 ? 10 : desiredRadius;
-        this.spacing = (this.radius*2)+padding;
+        //Determine the drawing area size
+        this.width = Math.min(window.innerWidth, document.documentElement.clientWidth) - (this.pagePadding*2);
+        this.height = Math.min(window.innerHeight, document.documentElement.clientHeight) - (this.pagePadding*2);
+
+        //Maximum columns we could have with the minWidth
+        this.MaxBits =  Math.floor((this.width) / ((this.minWidth*2)+padding));
+        this.columns = Math.max(Math.min(this.MaxBits, this.columns),2);
+        let bitInput : HTMLInputElement = document.getElementById("bits") as HTMLInputElement;
+        bitInput.value = this.columns.toString();
+
+        // Compute the maximum radius that allows all the circles to fit on the page
+        this.radius = Math.max(
+            this.minWidth,
+            Math.floor(
+                Math.min(
+                    (((this.width) - padding*this.columns)/2) / this.columns,
+                    (((this.height) - (padding*(this.rows+2)))/2) / (this.rows+2)
+                )
+            )
+        );
+        
+        //The space between each circle
+        this.spacing = this.radius * 2 + padding;
 
         // Determine the starting position to draw the circles
-        this.startX = (innerWidth/2)+this.radius-padding*2-(this.columns*this.spacing)/2;
-        this.startY = (innerHeight/2)-this.radius+padding*2-(this.rows+1)*this.spacing/2;
+        let totalWidth = this.columns * this.spacing - padding*2;
+        let startX = (this.width - totalWidth) / 2 + this.radius;
+        let totalHeight = ((this.rows+2) * this.spacing) - padding*2;
+        let startY = (this.height - totalHeight) / 2;
+
+        this.startX = startX;
+        this.startY = startY;
 
         // Init circle array
         this.circles = new Array(this.rows);
+        this.BinaryNumbers = new Array(this.rows);
 
         // Create canvas to draw on
-        this.canvas = new Canvas(this);
-
-        // Create the results display
-        this.results = new Array(this.columns);
-        for (let c = 0; c < this.columns; c++) {
-            this.results[c]= new Circle(this.startX + c * this.spacing,this.startY + this.radius + this.spacing*this.rows+this.spacing/2,this.radius,this.canvas.context);
-        }
+        this.canvas = new CanvasStage(this);
+        this.results = new BinaryNumber(this,this.rows+1);
         
         // Creates the circles for each row (number) with the amount of bits (columns) requested.
         for (let r = 0; r < this.rows; r++) {
-            this.circles[r]=new Array(this.columns);
-            for (let c = 0; c < this.columns; c++) {
-                this.circles[r][c]= new Circle(this.startX + c * this.spacing,this.startY + this.radius + this.spacing*r,this.radius,this.canvas.context);
-            }
+            this.BinaryNumbers[r] = new BinaryNumber(this,r);
         }
     }
 }
